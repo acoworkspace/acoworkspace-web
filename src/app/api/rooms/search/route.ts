@@ -11,8 +11,19 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing start/end" }, { status: 400 });
   }
 
-  const startDate = new Date(start);
-  const dayOfWeek = startDate.getDay();
+  // Parse local time directly from the ISO string to avoid UTC conversion on the server.
+  // Input format: "YYYY-MM-DDTHH:MM:SS-03:00"
+  const [startDatePart, startTimePart] = start.split("T");
+  const [, endTimePart] = end.split("T");
+  const [startH, startM] = startTimePart.split(":").map(Number);
+  const [endH, endM] = endTimePart.split(":").map(Number);
+  const startMinutes = startH * 60 + startM;
+  const endMinutes = endH * 60 + endM;
+
+  // Day of week from the date part (local Argentina date, no UTC shift needed)
+  const [sy, sm, sd] = startDatePart.split("-").map(Number);
+  const dayOfWeek = new Date(sy, sm - 1, sd).getDay();
+
   const admin = supabaseAdmin();
 
   // Get all active rooms available on that day of week
@@ -23,11 +34,6 @@ export async function GET(req: NextRequest) {
     .order("sede").order("name");
 
   if (!rooms) return NextResponse.json({ rooms: [] });
-
-  // Filter rooms by day-of-week and hours
-  const startMinutes = startDate.getHours() * 60 + startDate.getMinutes();
-  const endDate = new Date(end);
-  const endMinutes = endDate.getHours() * 60 + endDate.getMinutes();
 
   const eligibleRooms = rooms.filter((r) => {
     if (!r.available_days.includes(dayOfWeek)) return false;

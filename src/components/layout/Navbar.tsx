@@ -18,7 +18,7 @@ export default function Navbar() {
           <Link href="#servicios" className="hover:text-neutral-900 transition-colors">Servicios</Link>
           <Link href="#sedes" className="hover:text-neutral-900 transition-colors">Sedes</Link>
           <Link href="#contacto" className="hover:text-neutral-900 transition-colors">Contacto</Link>
-          <Link href="/reservas" className="bg-neutral-900 text-white px-5 py-2 rounded-full hover:bg-neutral-700 transition-colors">
+          <Link href="/reservas" className="aco-gradient text-white px-5 py-2 rounded-full hover:opacity-90 transition-opacity">
             Reservar
           </Link>
         </nav>
@@ -39,7 +39,7 @@ export default function Navbar() {
           <Link href="#servicios" onClick={() => setOpen(false)}>Servicios</Link>
           <Link href="#sedes" onClick={() => setOpen(false)}>Sedes</Link>
           <Link href="#contacto" onClick={() => setOpen(false)}>Contacto</Link>
-          <Link href="/reservas" className="bg-neutral-900 text-white px-5 py-2.5 rounded-full text-center">
+          <Link href="/reservas" className="aco-gradient text-white px-5 py-2.5 rounded-full text-center hover:opacity-90 transition-opacity">
             Reservar
           </Link>
         </div>

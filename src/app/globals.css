@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #111111;
+  --aco-from: #C0201A;
+  --aco-to: #E03A1A;
 }
 
 @theme inline {
@@ -20,4 +22,32 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.aco-gradient {
+  background: linear-gradient(135deg, #C0201A, #E03A1A);
+}
+
+.aco-gradient-text {
+  background: linear-gradient(135deg, #C0201A, #E03A1A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.aco-border {
+  border-color: #F03A2E;
+}
+
+.lima-accent {
+  color: #627A38;
+}
+
+.lima-badge {
+  background: #dce5c8;
+  color: #3d4e22;
+}
+
+.lima-border {
+  border-color: #627A38;
 }

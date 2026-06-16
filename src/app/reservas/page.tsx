@@ -133,8 +133,8 @@ export default function ReservasPage() {
     setSubmitting(true);
 
     const dateStr = `${selectedDate.getFullYear()}-${pad(selectedDate.getMonth() + 1)}-${pad(selectedDate.getDate())}`;
-    const start = `${dateStr}T${startTime}:00`;
-    const end = `${dateStr}T${endTime}:00`;
+    const start = `${dateStr}T${startTime}:00-03:00`;
+    const end = `${dateStr}T${endTime}:00-03:00`;
 
     const res = await fetch("/api/bookings", {
       method: "POST",

@@ -13,6 +13,10 @@ const DAY_NAMES = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 const MONTH_NAMES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
 function pad(n: number) { return String(n).padStart(2, "0"); }
+function fmtPoints(p: number) { return parseFloat(p.toFixed(2)); }
+function calcPoints(startT: string, endT: string, pph: number) {
+  return Math.round((timeToMinutes(endT) - timeToMinutes(startT)) / 60 * pph * 2) / 2;
+}
 
 // Generate 30-min slots from 07:00 to 23:00
 function timeSlots() {
@@ -94,6 +98,10 @@ export default function ReservasPage() {
   const firstDay = new Date(calYear, calMonth, 1).getDay();
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
   const today = new Date(); today.setHours(0, 0, 0, 0);
+  // Last day of next month
+  const maxDate = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+  maxDate.setHours(0, 0, 0, 0);
+  const canGoNext = new Date(calYear, calMonth + 1, 1) <= maxDate;
 
   const endSlots = ALL_SLOTS.filter(
     (t) => timeToMinutes(t) > timeToMinutes(startTime)
@@ -230,7 +238,7 @@ export default function ReservasPage() {
           <div className="flex items-center gap-4">
             {acoPoints !== null && (
               <div className="flex items-center gap-1.5 bg-neutral-100 px-3 py-1.5 rounded-full">
-                <span className="text-xs font-bold text-neutral-900">{acoPoints}</span>
+                <span className="text-xs font-bold text-neutral-900">{fmtPoints(acoPoints)}</span>
                 <span className="text-xs text-neutral-500">ACO Points</span>
               </div>
             )}
@@ -283,7 +291,7 @@ export default function ReservasPage() {
                 <div className="flex items-center justify-between mb-5">
                   <button onClick={() => setCalendarDate(new Date(calYear, calMonth - 1, 1))} className="p-2 hover:bg-neutral-100 rounded-lg transition-colors text-neutral-500 text-lg leading-none">‹</button>
                   <span className="font-semibold text-neutral-900">{MONTH_NAMES[calMonth]} {calYear}</span>
-                  <button onClick={() => setCalendarDate(new Date(calYear, calMonth + 1, 1))} className="p-2 hover:bg-neutral-100 rounded-lg transition-colors text-neutral-500 text-lg leading-none">›</button>
+                  <button onClick={() => canGoNext && setCalendarDate(new Date(calYear, calMonth + 1, 1))} disabled={!canGoNext} className="p-2 hover:bg-neutral-100 rounded-lg transition-colors text-neutral-500 text-lg leading-none disabled:opacity-30 disabled:cursor-not-allowed">›</button>
                 </div>
                 <div className="grid grid-cols-7 gap-1 mb-2">
                   {DAY_NAMES.map((d) => <div key={d} className="text-center text-xs font-medium text-neutral-400 py-1">{d}</div>)}
@@ -293,14 +301,16 @@ export default function ReservasPage() {
                   {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
                     const date = new Date(calYear, calMonth, day);
                     const isPast = date < today;
+                    const isBeyondMax = date > maxDate;
+                    const isDisabled = isPast || isBeyondMax;
                     const isSel = selectedDate?.getDate() === day && selectedDate?.getMonth() === calMonth && selectedDate?.getFullYear() === calYear;
                     return (
                       <button
                         key={day}
-                        onClick={() => !isPast && setSelectedDate(date)}
-                        disabled={isPast}
+                        onClick={() => !isDisabled && setSelectedDate(date)}
+                        disabled={isDisabled}
                         className={`aspect-square rounded-lg text-sm flex items-center justify-center transition-colors font-medium ${
-                          isSel ? "text-white" : isPast ? "text-neutral-300 cursor-not-allowed" : "text-neutral-700 hover:bg-neutral-100"
+                          isSel ? "text-white" : isDisabled ? "text-neutral-300 cursor-not-allowed" : "text-neutral-700 hover:bg-neutral-100"
                         }`}
                         style={isSel ? { background: "linear-gradient(135deg, #C0201A, #E03A1A)" } : {}}
                       >
@@ -425,7 +435,7 @@ export default function ReservasPage() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-neutral-400">Disponible ✓</span>
                       <span className="font-semibold text-neutral-800 text-sm">
-                        {Math.ceil((timeToMinutes(endTime) - timeToMinutes(startTime)) / 60 * (room.points_per_hour ?? 1))} pts
+                        {calcPoints(startTime, endTime, room.points_per_hour ?? 1)} pts
                       </span>
                     </div>
                   </button>
@@ -471,14 +481,14 @@ export default function ReservasPage() {
                 <div className="flex justify-between border-t border-neutral-100 pt-2 mt-2">
                   <span className="font-semibold text-neutral-900">ACO Points a descontar</span>
                   <span className="font-bold text-neutral-900">
-                    {Math.ceil((timeToMinutes(endTime) - timeToMinutes(startTime)) / 60 * (selectedRoom.points_per_hour ?? 1))} pts
+                    {calcPoints(startTime, endTime, selectedRoom.points_per_hour ?? 1)} pts
                   </span>
                 </div>
                 {acoPoints !== null && (
                   <div className="flex justify-between text-sm">
                     <span className="text-neutral-500">Tu saldo actual</span>
-                    <span className={acoPoints < Math.ceil((timeToMinutes(endTime) - timeToMinutes(startTime)) / 60 * (selectedRoom.points_per_hour ?? 1)) ? "text-red-500 font-medium" : "text-neutral-600"}>
-                      {acoPoints} pts
+                    <span className={acoPoints < calcPoints(startTime, endTime, selectedRoom.points_per_hour ?? 1) ? "text-red-500 font-medium" : "text-neutral-600"}>
+                      {fmtPoints(acoPoints)} pts
                     </span>
                   </div>
                 )}

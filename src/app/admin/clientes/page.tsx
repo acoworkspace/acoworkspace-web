@@ -309,7 +309,7 @@ export default function ClientesPage() {
                       {/* Saldo — destacado */}
                       <div className="flex flex-col items-center justify-center rounded-xl px-5 py-2.5 min-w-[80px]"
                         style={{ background: "linear-gradient(135deg, #C0201A22, #E03A1A11)", border: "1px solid #C0201A44" }}>
-                        <div className="text-white font-bold text-xl leading-none">{client.aco_points}</div>
+                        <div className="text-white font-bold text-xl leading-none">{parseFloat(Number(client.aco_points).toFixed(2))}</div>
                         <div className="text-xs mt-1 font-medium" style={{ color: "#E03A1A" }}>Saldo</div>
                       </div>
 
@@ -377,7 +377,7 @@ export default function ClientesPage() {
                     {/* Stats mobile */}
                     <div className="md:hidden flex gap-6 text-center">
                       {[
-                        { label: "Saldo", val: client.aco_points },
+                        { label: "Saldo", val: parseFloat(Number(client.aco_points).toFixed(2)) },
                         { label: "Cargados", val: client.total_given },
                         { label: "Gastados", val: client.total_spent },
                         { label: "Prom/mes", val: client.monthly_avg },

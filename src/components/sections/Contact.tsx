@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { ContentMap } from "@/lib/site-content";
 
 const SEDES = ["Palermo", "Monserrat"];
@@ -17,6 +18,7 @@ export default function Contact({ content = {} }: { content?: ContentMap }) {
     mensaje: "",
   });
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
+  const router = useRouter();
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -40,7 +42,11 @@ export default function Contact({ content = {} }: { content?: ContentMap }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      setStatus(res.ok ? "ok" : "error");
+      if (res.ok) {
+        router.push("/gracias");
+      } else {
+        setStatus("error");
+      }
     } catch {
       setStatus("error");
     }

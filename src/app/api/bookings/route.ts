@@ -43,7 +43,8 @@ export async function POST(req: NextRequest) {
 
   // Calculate points cost
   const durationHours = minutesBetween(start_time, end_time) / 60;
-  const pointsCost = Math.ceil(durationHours * (room.points_per_hour ?? 1));
+  // Round to nearest 0.5 so a 30-min slot costs half the hourly rate
+  const pointsCost = Math.round(durationHours * (room.points_per_hour ?? 1) * 2) / 2;
 
   // If logged-in user → validate and deduct points
   if (userId) {

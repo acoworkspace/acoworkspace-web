@@ -88,7 +88,7 @@ export default function ClientesPage() {
   };
 
   const handleAddPoints = async (client: Client) => {
-    const delta = parseInt(pointsInput);
+    const delta = parseFloat(pointsInput);
     if (isNaN(delta) || delta === 0) return;
     setSaving(true);
     await fetch("/api/admin/clients/points", {
@@ -105,7 +105,7 @@ export default function ClientesPage() {
   };
 
   const handleSaveMonthly = async (client: Client) => {
-    const val = parseInt(monthlyInput);
+    const val = parseFloat(monthlyInput);
     if (isNaN(val) || val < 0) return;
     const admin = await fetch("/api/admin/clients/monthly", {
       method: "POST",

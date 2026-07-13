@@ -18,12 +18,12 @@ function calcPoints(startT: string, endT: string, pph: number) {
   return Math.round((timeToMinutes(endT) - timeToMinutes(startT)) / 60 * pph * 2) / 2;
 }
 
-// Generate 30-min slots from 07:00 to 23:00
+// Generate 30-min slots from 08:00 to 19:00
 function timeSlots() {
   const slots: string[] = [];
-  for (let h = 7; h <= 23; h++) {
+  for (let h = 8; h <= 19; h++) {
     slots.push(`${pad(h)}:00`);
-    if (h < 23) slots.push(`${pad(h)}:30`);
+    if (h < 19) slots.push(`${pad(h)}:30`);
   }
   return slots;
 }
